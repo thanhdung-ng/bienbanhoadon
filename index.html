@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tạo biên bản hóa đơn</title>
+<style>
+:root{--bg:#f3f5f9;--panel:#fff;--ink:#1b2333;--mut:#6b7488;--line:#d9deea;--acc:#2f6fed;--inp:#f7f8fb;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.err{border-color:#d93025!important;background:rgba(217,48,37,.08)!important}
+.tg{float:right;padding:6px 10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;font:inherit;font-size:12px;cursor:pointer}
+:root[data-theme="dark"]{--bg:#0e1420;--panel:#151d2c;--ink:#e6eaf3;--mut:#8b96ad;--line:#27324a;--acc:#5b8dff;--inp:#0f1624}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:14px}
+.app{display:grid;grid-template-columns:400px 1fr;gap:20px;padding:20px;max-width:1400px;margin:0 auto}
+@media(max-width:900px){.app{grid-template-columns:1fr}}
+h1{font-size:20px;margin:0 0 4px}.sub{color:var(--mut);margin:0 0 14px;font-size:13px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px}
+.card h2{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin:0 0 10px}
+label{display:block;font-size:12px;color:var(--mut);margin:8px 0 3px}
+input,select,textarea{width:100%;background:var(--inp);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font:inherit}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);outline-offset:-1px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.seg button{padding:10px;border:1px solid var(--line);background:var(--inp);color:var(--ink);border-radius:8px;font:inherit;cursor:pointer}
+.seg button.on{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
+.btn{width:100%;padding:12px;border:0;border-radius:10px;background:var(--acc);color:#fff;font:inherit;font-weight:600;cursor:pointer}
+.ro{opacity:.85}
+.pv{overflow:auto}
+.pv small{color:var(--mut);display:block;margin-bottom:8px}
+.paper{background:#fff;color:#000;width:210mm;max-width:100%;height:296mm;overflow:hidden;padding:12mm 16mm;margin:0 auto;font-family:"Times New Roman",Times,serif;font-size:12pt;line-height:1.25;box-shadow:0 2px 12px rgba(0,0,0,.25)}
+.paper .c{text-align:center}.paper b{font-weight:700}
+.paper p{margin:2px 0;text-align:justify}
+.paper h3{font-size:1.15em;text-align:center;margin:8px 0 2px;text-transform:uppercase}
+.paper table.t{border-collapse:collapse;width:100%;margin:4px 0}
+.paper table.t td{border:0;padding:2px 8px;width:50%}
+.sig{display:flex;justify-content:space-around;text-align:center;margin-top:12px;font-weight:700}
+.sig div{min-width:40%;min-height:70px}.sig i{display:block;font-weight:400;font-size:11pt}
+.pre{white-space:pre-wrap}
+@page{size:A4;margin:0}
+@media print{
+ body{background:#fff}.app{display:block;padding:0}.form,.pv small{display:none}
+ .paper{box-shadow:none;width:210mm;height:296mm;padding:12mm 16mm;margin:0}
+}
+</style>
+</head>
+<body>
+<div class="app">
+ <div class="form">
+  <button class="tg" id="theme" type="button">🌙 Nền tối</button><h1>Tạo biên bản hóa đơn</h1>
+  <p class="sub">Chọn loại biên bản và chi nhánh, nhập thông tin bên mua và hóa đơn, xem trước bên phải rồi xuất PDF.</p>
+
+  <div class="card"><h2>1 · Loại biên bản</h2>
+   <div class="seg"><button id="bAdj" class="on" type="button">Điều chỉnh</button><button id="bRepl" type="button">Thay thế</button></div>
+   <label>Chi nhánh (Bên bán)</label>
+   <select id="branch"><option value="dn">Chi nhánh 3 tại Đồng Nai</option><option value="bp">Chi nhánh tại Bình Phước</option></select>
+   <label>Tên bên bán</label><input id="sName" class="ro" readonly>
+   <div class="row"><div><label>Mã số thuế</label><input id="sMst" class="ro" readonly></div><div><label>Người đại diện</label><input id="sRep" class="ro" readonly></div></div>
+   <label>Địa chỉ</label><textarea id="sAddr" class="ro" readonly></textarea>
+   <label>Chức vụ (Bên bán)</label><input id="sRole">
+  </div>
+
+  <div class="card"><h2>2 · Thông tin chung</h2>
+   <div class="row"><div><label>Số biên bản</label><input id="no" placeholder="001/11/C26TBC"></div><div><label>Ngày lập</label><input id="date" type="date"></div></div>
+  </div>
+
+  <div class="card"><h2>3 · Bên mua</h2>
+   <label>Tên bên mua</label><input id="bName" placeholder="Hộ Kinh Doanh ...">
+   <label>Họ và tên người mua hàng</label><input id="bBuyer">
+   <div class="row"><div><label>Mã số thuế</label><input id="bMst"></div><div><label>Số CC/CCCD/định danh</label><input id="bCccd"></div></div>
+   <label>Địa chỉ</label><textarea id="bAddr"></textarea>
+   <div class="row"><div><label>Người đại diện</label><input id="bRep"></div><div><label>Chức vụ</label><input id="bRole"></div></div>
+  </div>
+
+  <div class="card"><h2>4 · Hóa đơn</h2>
+   <div class="row"><div><label>Mẫu số</label><input id="iForm" value="1"></div><div><label>Ký hiệu</label><input id="iSer" value="C26TBC"></div></div>
+   <div class="row"><div><label>Số hóa đơn</label><input id="iNo"></div><div><label>Ngày hóa đơn</label><input id="iDate" type="date"></div></div>
+   <label id="lReason">Lý do điều chỉnh</label><input id="reason">
+   <div id="adjOnly"><label>Nội dung trước điều chỉnh</label><textarea id="before"></textarea><label>Nội dung sau điều chỉnh</label><textarea id="after"></textarea></div>
+  </div>
+  <button class="btn" id="pdf" type="button">Xuất PDF</button>
+  <p class="sub" id="msg" style="color:#d93025;display:none"></p>
+  <p class="sub" style="margin-top:8px">Trong hộp thoại in, chọn “Lưu dưới dạng PDF”, khổ A4, tắt “Đầu trang và chân trang”.</p>
+ </div>
+ <div class="pv"><small>Xem trước · khổ A4</small><div class="paper" id="paper"></div></div>
+</div>
+<script>
+var BR={dn:{n:"Công Ty Cổ Phần Chăn Nuôi C.P. Việt Nam-Chi Nhánh 3 Tại Đồng Nai",m:"3600224423-016",a:"Khu Công nghiệp Biên Hòa II, Phường Long Hưng, Thành phố Đồng Nai, Việt Nam",r:"Jaturong Yotharak"},
+bp:{n:"CÔNG TY CỔ PHẦN CHĂN NUÔI C.P. VIỆT NAM - CHI NHÁNH TẠI BÌNH PHƯỚC",m:"3600224423-032",a:"N12 Số lô 7-8, Đường Tôn Đức Thắng, Khu phố 1, Phường Đồng Xoài, Thành Phố Đồng Nai, Việt Nam",r:"Lê Đình Công"}};
+var type="adj";
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function fd(v){if(!v)return"…/…/……";var p=v.split("-");return p[2]+"/"+p[1]+"/"+p[0]}
+function v(i){return esc($(i).value)}
+function render(){
+ var adj=type==="adj",w=adj?"điều chỉnh":"thay thế",b=BR[$("branch").value];
+ $("sName").value=b.n;$("sMst").value=b.m;$("sAddr").value=b.a;$("sRep").value=b.r;
+ $("adjOnly").style.display=adj?"":"none";
+ $("lReason").textContent="Lý do "+w;
+ $("bAdj").className=adj?"on":"";$("bRepl").className=adj?"":"on";
+ var h='<div class="c"><b>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</b><br><b>Độc lập - Tự do - Hạnh phúc</b><br>---oOo---</div>'
+ +'<h3>Biên bản '+w+' hóa đơn</h3><div class="c">Số: '+(v("no")||"……")+'</div>'
+ +'<p>- Căn cứ Nghị định số 254/2026/NĐ-CP của Chính phủ: Quy định chi tiết một số điều và biện pháp để tổ chức, hướng dẫn thi hành Luật Quản lý thuế số 108/2025/QH15 về hóa đơn điện tử, chứng từ điện tử.</p>'
+ +'<p>- Căn cứ Thông tư số 91/2026/TT-BTC ngày 30/06/2026 của Bộ Tài chính Quy định một số điều của Luật Quản lý thuế và Nghị định số 254/2026/NĐ-CP của Chính phủ quy định chi tiết một số điều và biện pháp để tổ chức, hướng dẫn thi hành Luật Quản lý thuế số 108/2025/QH15 về hóa đơn điện tử, chứng từ điện tử</p>'
+ +'<p>Hôm nay, ngày '+fd($("date").value)+' chúng tôi gồm có:</p>'
+ +'<p><b>BÊN BÁN: '+esc(b.n)+'</b></p><p>Mã số thuế: '+esc(b.m)+'</p><p>Địa chỉ: '+esc(b.a)+'</p><p>Người đại diện: '+esc(b.r)+'</p><p>Chức vụ: '+v("sRole")+'</p>'
+ +'<p><b>BÊN MUA: '+v("bName")+'</b></p><p>Họ và tên người mua hàng: '+v("bBuyer")+'</p><p>Mã số thuế: '+v("bMst")+'</p><p>Số CC/CCCD/số định danh: '+v("bCccd")+'</p><p>Địa chỉ: '+v("bAddr")+'</p><p>Người đại diện: '+v("bRep")+'</p><p>Chức vụ: '+v("bRole")+'</p>'
+ +'<p>Chúng tôi thống nhất cùng tiến hành lập biên bản về việc '+w+' hóa đơn điện tử sau:</p>'
+ +'<p>1. Thông tin hóa đơn bị '+w+':</p>'
+ +'<table class="t"><tr><td><b>Mẫu số:</b> '+v("iForm")+'</td><td><b>Ký hiệu:</b> '+v("iSer")+'</td></tr><tr><td><b>Số hóa đơn:</b> '+v("iNo")+'</td><td><b>Ngày:</b> '+fd($("iDate").value)+'</td></tr></table>'
+ +'<p class="pre"><b>Lý do '+w+':</b> '+v("reason")+'</p>';
+ if(adj)h+='<p class="pre"><b>Nội dung trước điều chỉnh:</b> '+v("before")+'</p><p class="pre"><b>Nội dung sau điều chỉnh:</b> '+v("after")+'</p>';
+ h+='<p>Biên bản được hai bên nhất trí và lập thành hai bản (02 bản), mỗi bên giữ một bản (01 bản) và có giá trị pháp lý như nhau.</p>'
+ +'<p>Chúng tôi cam kết và hoàn toàn chịu trách nhiệm về việc '+w+' hóa đơn điện tử này.</p>'
+ +'<div class="sig"><div>ĐẠI DIỆN BÊN MUA<i>(Ký, ghi rõ họ tên)</i></div><div>ĐẠI DIỆN BÊN BÁN<i>(Ký, ghi rõ họ tên)</i></div></div>';
+ $("paper").innerHTML=h;
+ var p=$("paper"),s=12;p.style.fontSize=s+"pt";
+ while(p.scrollHeight>p.clientHeight+1&&s>7){s-=0.25;p.style.fontSize=s+"pt"}
+ document.title="Bien ban "+w+" hoa don "+($("iNo").value||"");
+}
+$("bAdj").onclick=function(){type="adj";render()};
+$("bRepl").onclick=function(){type="rep";render()};
+$("pdf").onclick=function(){
+ var ids=["no","date","bName","bMst","bCccd","bAddr","bRep","iForm","iSer","iNo","iDate","reason"];
+ if(type==="adj")ids.push("before","after");
+ var first=null,m=$("msg");
+ document.querySelectorAll(".err").forEach(function(e){e.classList.remove("err")});
+ ids.forEach(function(i){var e=$(i);if(!e.value.trim()){e.classList.add("err");if(!first)first=e}});
+ if(first){m.textContent="Vui lòng nhập đủ các ô được tô đỏ (trừ ô Chức vụ) trước khi xuất PDF.";m.style.display="block";first.focus();return}
+ m.style.display="none";window.print()};
+document.addEventListener("input",function(e){e.target.classList.remove("err")});
+$("theme").onclick=function(){var d=document.documentElement,dark=d.getAttribute("data-theme")==="dark";d.setAttribute("data-theme",dark?"light":"dark");this.textContent=dark?"🌙 Nền tối":"☀️ Nền sáng"};
+document.querySelectorAll("input,select,textarea").forEach(function(e){e.addEventListener("input",render);e.addEventListener("change",render)});
+render();
+</script>
+</body>
+</html>
